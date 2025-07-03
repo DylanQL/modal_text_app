@@ -16,7 +16,7 @@ class InventarioApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => InventarioProvider()..initializeDatabase(),
       child: MaterialApp(
-        title: 'Sistema de Inventario SUAN',
+        title: 'ModaText',
         debugShowCheckedModeBanner: false,
         theme: AppThemes.lightTheme,
         home: const HomeScreen(),
