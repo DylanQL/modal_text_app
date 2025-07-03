@@ -89,7 +89,6 @@ class Producto {
     required String unidadVenta,
   }) {
     // Tomar la primera letra o número de cada campo
-    String tipoCode = tipo.isNotEmpty ? tipo.substring(0, 1).toUpperCase() : '';
     String familiaCode = familia.isNotEmpty ? familia.substring(0, 1).toUpperCase() : '';
     String claseCode = clase.isNotEmpty ? clase.substring(0, 1).toUpperCase() : '';
     String modeloCode = modelo.isNotEmpty ? modelo.substring(0, 1).toUpperCase() : '';
@@ -99,7 +98,7 @@ class Producto {
     String capacidadCode = capacidad.isNotEmpty ? capacidad.substring(0, 1).toUpperCase() : '';
     String unidadVentaCode = unidadVenta.isNotEmpty ? unidadVenta.substring(0, 1).toUpperCase() : '';
     
-    return '$tipoCode$familiaCode$claseCode$modeloCode$marcaCode$presentacionCode$colorCode$capacidadCode$unidadVentaCode';
+    return '$familiaCode$claseCode$modeloCode$marcaCode$presentacionCode$colorCode$capacidadCode$unidadVentaCode';
   }
 
   Producto copyWith({
