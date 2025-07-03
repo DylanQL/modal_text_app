@@ -287,55 +287,110 @@ class _ProductosScreenState extends State<ProductosScreen> {
                   bottomRight: Radius.circular(16),
                 ),
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
                 children: [
-                  // Información del producto (lado izquierdo)
-                  Expanded(
-                    flex: producto.imagen != null && producto.imagen!.isNotEmpty ? 2 : 1,
-                    child: Column(
+                  // Si hay imagen, mostrar layout con dos columnas
+                  if (producto.imagen != null && producto.imagen!.isNotEmpty) ...[
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildDetailRow('Clase:', producto.clase),
-                        _buildDetailRow('Modelo:', producto.modelo),
-                        _buildDetailRow('Presentación:', producto.presentacion),
-                        _buildDetailRow('Color:', producto.color),
-                        _buildDetailRow('Capacidad:', producto.capacidad),
-                        _buildDetailRow('Unidad de Venta:', producto.unidadVenta),
-                        _buildDetailRow('Ubicación:', '${producto.rack} - ${producto.nivel}'),
+                        // Información del producto (lado izquierdo)
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Información básica en dos columnas
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _buildDetailRow('Clase:', producto.clase),
+                                        _buildDetailRow('Modelo:', producto.modelo),
+                                        _buildDetailRow('Presentación:', producto.presentacion),
+                                        _buildDetailRow('Color:', producto.color),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _buildDetailRow('Capacidad:', producto.capacidad),
+                                        _buildDetailRow('Unidad:', producto.unidadVenta),
+                                        _buildDetailRow('Rack:', producto.rack),
+                                        _buildDetailRow('Nivel:', producto.nivel),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                         
-                        // Botones de acción (si no hay imagen, se muestran aquí)
-                        if (producto.imagen == null || producto.imagen!.isEmpty) ...[
-                          const SizedBox(height: 20),
-                          _buildActionButtons(context, producto, provider),
-                        ],
+                        const SizedBox(width: 20),
+                        
+                        // Imagen del producto (lado derecho)
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Imagen del Producto',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              _buildCompactProductImage(producto.imagen!),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                  
-                  // Imagen del producto (lado derecho)
-                  if (producto.imagen != null && producto.imagen!.isNotEmpty) ...[
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Imagen:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
+                    const SizedBox(height: 24),
+                    // Botones de acción abajo cuando hay imagen
+                    _buildActionButtons(context, producto, provider),
+                  ] else ...[
+                    // Layout sin imagen - información en dos columnas
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailRow('Clase:', producto.clase),
+                              _buildDetailRow('Modelo:', producto.modelo),
+                              _buildDetailRow('Presentación:', producto.presentacion),
+                              _buildDetailRow('Color:', producto.color),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          _buildCompactProductImage(producto.imagen!),
-                          const SizedBox(height: 16),
-                          _buildActionButtons(context, producto, provider),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailRow('Capacidad:', producto.capacidad),
+                              _buildDetailRow('Unidad de Venta:', producto.unidadVenta),
+                              _buildDetailRow('Ubicación:', '${producto.rack} - ${producto.nivel}'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 24),
+                    // Botones de acción abajo cuando no hay imagen
+                    _buildActionButtons(context, producto, provider),
                   ],
                 ],
               ),
@@ -348,28 +403,28 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
-              ),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+              fontSize: 12,
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontWeight: FontWeight.normal,
-              ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              color: Colors.black87,
             ),
           ),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -378,16 +433,23 @@ class _ProductosScreenState extends State<ProductosScreen> {
   Widget _buildCompactProductImage(String imageUrl) {
     return Container(
       constraints: const BoxConstraints(
-        maxHeight: 150,
-        maxWidth: 200,
+        maxHeight: 180,
+        maxWidth: 180,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[300]!),
         color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: CachedNetworkImage(
           imageUrl: imageUrl,
           fit: BoxFit.contain,
@@ -445,10 +507,10 @@ class _ProductosScreenState extends State<ProductosScreen> {
   }
 
   Widget _buildActionButtons(BuildContext context, Producto producto, InventarioProvider provider) {
-    return Column(
+    return Row(
       children: [
-        SizedBox(
-          width: double.infinity,
+        Expanded(
+          flex: 2,
           child: ElevatedButton.icon(
             onPressed: () {
               Navigator.push(
@@ -460,28 +522,34 @@ class _ProductosScreenState extends State<ProductosScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.edit, size: 16),
+            icon: const Icon(Icons.inventory, size: 18),
             label: const Text('Gestionar Stock'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[600],
               foregroundColor: Colors.white,
               elevation: 2,
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: double.infinity,
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 1,
           child: ElevatedButton.icon(
             onPressed: () => _confirmarEliminar(context, producto, provider),
-            icon: const Icon(Icons.delete, size: 16),
+            icon: const Icon(Icons.delete_outline, size: 18),
             label: const Text('Eliminar'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red[600],
               foregroundColor: Colors.white,
               elevation: 2,
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
         ),

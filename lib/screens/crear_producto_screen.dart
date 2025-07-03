@@ -448,16 +448,23 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
         Center(
           child: Container(
             constraints: const BoxConstraints(
-              maxHeight: 200,
-              maxWidth: 300,
+              maxHeight: 220,
+              maxWidth: 280,
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.grey[300]!),
               color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               child: CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.contain,
