@@ -22,7 +22,7 @@ class MovimientoKardex {
   Map<String, dynamic> toMap() {
     return {
       'id_movimiento': idMovimiento,
-      'fecha': fecha.toIso8601String(),
+      'fecha': fecha.toUtc().toIso8601String(),
       'producto': producto,
       'cantidad': cantidad,
       'tipo_movimiento': tipoMovimiento,
@@ -33,9 +33,24 @@ class MovimientoKardex {
   }
 
   factory MovimientoKardex.fromMap(Map<String, dynamic> map) {
+    DateTime fechaParsed;
+    try {
+      // Intentar parsear la fecha desde MySQL
+      final fechaString = map['fecha'].toString();
+      if (fechaString.contains('T')) {
+        fechaParsed = DateTime.parse(fechaString).toLocal();
+      } else {
+        // Si es formato MySQL DATETIME, agregamos zona UTC
+        fechaParsed = DateTime.parse('${fechaString}Z').toLocal();
+      }
+    } catch (e) {
+      // Fallback a fecha actual si hay error
+      fechaParsed = DateTime.now();
+    }
+    
     return MovimientoKardex(
       idMovimiento: map['id_movimiento'],
-      fecha: DateTime.parse(map['fecha']),
+      fecha: fechaParsed,
       producto: map['producto'] ?? '',
       cantidad: map['cantidad'] ?? 0,
       tipoMovimiento: map['tipo_movimiento'] ?? '',

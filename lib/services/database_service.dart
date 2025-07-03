@@ -201,7 +201,7 @@ class DatabaseService {
       
       // Insertar movimiento en kardex
       final movimiento = MovimientoKardex(
-        fecha: DateTime.now(),
+        fecha: DateTime.now().toUtc(),
         producto: producto.idGenerado,
         cantidad: nuevaCantidad,
         tipoMovimiento: tipoMovimiento,
@@ -242,7 +242,7 @@ class DatabaseService {
           rack, nivel, stock_resultado
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
       ''', [
-        movimiento.fecha,
+        movimiento.fecha.toUtc(),
         movimiento.producto,
         movimiento.cantidad,
         movimiento.tipoMovimiento,
