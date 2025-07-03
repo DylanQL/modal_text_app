@@ -314,10 +314,8 @@ class DatabaseService {
   }
 
   Future<String> _generarIdProducto(Producto producto) async {
-    final conn = await connection;
-    
-    // Generar base del ID
-    String baseId = Producto.generarIdProducto(
+    // Generar ID basado en la primera letra de cada campo
+    String idGenerado = Producto.generarIdProducto(
       tipo: producto.tipo,
       familia: producto.familia,
       clase: producto.clase,
@@ -326,23 +324,10 @@ class DatabaseService {
       presentacion: producto.presentacion,
       color: producto.color,
       capacidad: producto.capacidad,
+      unidadVenta: producto.unidadVenta,
     );
     
-    // Quitar el último carácter (secuencial hardcodeado)
-    baseId = baseId.substring(0, baseId.length - 1);
-    
-    // Encontrar el próximo secuencial
-    final results = await conn.query(
-      'SELECT MAX(CAST(SUBSTRING(id_generado, ?, 1) AS UNSIGNED)) as max_seq FROM productos WHERE id_generado LIKE ?',
-      [baseId.length + 1, '$baseId%']
-    );
-    
-    int secuencial = 1;
-    if (results.first['max_seq'] != null) {
-      secuencial = results.first['max_seq'] + 1;
-    }
-    
-    return '$baseId$secuencial';
+    return idGenerado;
   }
 
   Future<void> close() async {

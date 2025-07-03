@@ -60,7 +60,8 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
         _marcaController.text.isNotEmpty &&
         _presentacionController.text.isNotEmpty &&
         _colorController.text.isNotEmpty &&
-        _capacidadController.text.isNotEmpty) {
+        _capacidadController.text.isNotEmpty &&
+        _unidadVentaController.text.isNotEmpty) {
       
       setState(() {
         _idGeneradoPreview = Producto.generarIdProducto(
@@ -72,6 +73,7 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
           presentacion: _presentacionController.text,
           color: _colorController.text,
           capacidad: _capacidadController.text,
+          unidadVenta: _unidadVentaController.text,
         );
       });
     } else {

@@ -86,21 +86,20 @@ class Producto {
     required String presentacion,
     required String color,
     required String capacidad,
+    required String unidadVenta,
   }) {
-    // Tomar las primeras 2 letras de cada campo (o 1 si es muy corto)
-    String tipoCode = tipo.length >= 2 ? tipo.substring(0, 2).toUpperCase() : tipo.toUpperCase();
-    String familiaCode = familia.length >= 2 ? familia.substring(0, 2).toUpperCase() : familia.toUpperCase();
-    String claseCode = clase.length >= 2 ? clase.substring(0, 2).toUpperCase() : clase.toUpperCase();
-    String modeloCode = modelo.length >= 2 ? modelo.substring(0, 2).toUpperCase() : modelo.toUpperCase();
-    String marcaCode = marca.length >= 2 ? marca.substring(0, 2).toUpperCase() : marca.toUpperCase();
-    String presentacionCode = presentacion.length >= 2 ? presentacion.substring(0, 2).toUpperCase() : presentacion.toUpperCase();
-    String colorCode = color.length >= 2 ? color.substring(0, 2).toUpperCase() : color.toUpperCase();
-    String capacidadCode = capacidad.length >= 2 ? capacidad.substring(0, 2).toUpperCase() : capacidad.toUpperCase();
+    // Tomar la primera letra o número de cada campo
+    String tipoCode = tipo.isNotEmpty ? tipo.substring(0, 1).toUpperCase() : '';
+    String familiaCode = familia.isNotEmpty ? familia.substring(0, 1).toUpperCase() : '';
+    String claseCode = clase.isNotEmpty ? clase.substring(0, 1).toUpperCase() : '';
+    String modeloCode = modelo.isNotEmpty ? modelo.substring(0, 1).toUpperCase() : '';
+    String marcaCode = marca.isNotEmpty ? marca.substring(0, 1).toUpperCase() : '';
+    String presentacionCode = presentacion.isNotEmpty ? presentacion.substring(0, 1).toUpperCase() : '';
+    String colorCode = color.isNotEmpty ? color.substring(0, 1).toUpperCase() : '';
+    String capacidadCode = capacidad.isNotEmpty ? capacidad.substring(0, 1).toUpperCase() : '';
+    String unidadVentaCode = unidadVenta.isNotEmpty ? unidadVenta.substring(0, 1).toUpperCase() : '';
     
-    // Generar un número secuencial (esto debería venir de la base de datos)
-    String secuencial = '1'; // Por ahora hardcodeado, en la implementación real vendría de DB
-    
-    return '$tipoCode$familiaCode$claseCode$modeloCode$marcaCode$presentacionCode$colorCode$capacidadCode$secuencial';
+    return '$tipoCode$familiaCode$claseCode$modeloCode$marcaCode$presentacionCode$colorCode$capacidadCode$unidadVentaCode';
   }
 
   Producto copyWith({
