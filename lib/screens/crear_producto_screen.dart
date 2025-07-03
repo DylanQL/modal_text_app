@@ -145,7 +145,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _familiaController,
                         label: 'Familia *',
-                        hint: 'Ej: Electrónicos, Textiles, etc.',
                         icon: Icons.category,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -154,7 +153,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _claseController,
                         label: 'Clase *',
-                        hint: 'Ej: Audio, Video, etc.',
                         icon: Icons.class_,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -163,7 +161,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _modeloController,
                         label: 'Modelo *',
-                        hint: 'Ej: MP3, MP4, etc.',
                         icon: Icons.device_hub,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -172,7 +169,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _marcaController,
                         label: 'Marca *',
-                        hint: 'Ej: Apple, Samsung, etc.',
                         icon: Icons.branding_watermark,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -181,7 +177,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _presentacionController,
                         label: 'Presentación *',
-                        hint: 'Ej: Slim, Compact, etc.',
                         icon: Icons.style,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -190,7 +185,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _colorController,
                         label: 'Color *',
-                        hint: 'Ej: Silver, Black, etc.',
                         icon: Icons.color_lens,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -199,7 +193,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _capacidadController,
                         label: 'Capacidad *',
-                        hint: 'Ej: 16GB, 32GB, etc.',
                         icon: Icons.storage,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -208,7 +201,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _unidadVentaController,
                         label: 'Unidad de Venta *',
-                        hint: 'Ej: Unidad, Caja, Paquete, etc.',
                         icon: Icons.shopping_cart,
                         onChanged: (_) => _updateIdPreview(),
                       ),
@@ -220,7 +212,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                             child: _buildTextField(
                               controller: _rackController,
                               label: 'Rack *',
-                              hint: 'Ej: A1, B2, etc.',
                               icon: Icons.shelves,
                             ),
                           ),
@@ -229,7 +220,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                             child: _buildTextField(
                               controller: _nivelController,
                               label: 'Nivel *',
-                              hint: 'Ej: 1, 2, 3, etc.',
                               icon: Icons.layers,
                             ),
                           ),
@@ -240,7 +230,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                       _buildTextField(
                         controller: _imagenController,
                         label: 'URL de Imagen (Opcional)',
-                        hint: 'https://ejemplo.com/imagen.jpg',
                         icon: Icons.image,
                         required: false,
                         onChanged: (value) {
@@ -312,7 +301,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
-    required String hint,
     IconData? icon,
     bool required = true,
     Function(String)? onChanged,
@@ -331,7 +319,6 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          hintText: hint,
           prefixIcon: icon != null ? Icon(icon, color: Colors.blue[600]) : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
