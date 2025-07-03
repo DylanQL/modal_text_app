@@ -54,33 +54,20 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
   }
 
   void _updateIdPreview() {
-    if (_familiaController.text.isNotEmpty &&
-        _claseController.text.isNotEmpty &&
-        _modeloController.text.isNotEmpty &&
-        _marcaController.text.isNotEmpty &&
-        _presentacionController.text.isNotEmpty &&
-        _colorController.text.isNotEmpty &&
-        _capacidadController.text.isNotEmpty &&
-        _unidadVentaController.text.isNotEmpty) {
-      
-      setState(() {
-        _idGeneradoPreview = Producto.generarIdProducto(
-          tipo: widget.tipoProducto,
-          familia: _familiaController.text,
-          clase: _claseController.text,
-          modelo: _modeloController.text,
-          marca: _marcaController.text,
-          presentacion: _presentacionController.text,
-          color: _colorController.text,
-          capacidad: _capacidadController.text,
-          unidadVenta: _unidadVentaController.text,
-        );
-      });
-    } else {
-      setState(() {
-        _idGeneradoPreview = '';
-      });
-    }
+    // Generar preview dinámico mientras el usuario escribe
+    setState(() {
+      _idGeneradoPreview = Producto.generarIdProducto(
+        tipo: widget.tipoProducto,
+        familia: _familiaController.text,
+        clase: _claseController.text,
+        modelo: _modeloController.text,
+        marca: _marcaController.text,
+        presentacion: _presentacionController.text,
+        color: _colorController.text,
+        capacidad: _capacidadController.text,
+        unidadVenta: _unidadVentaController.text,
+      );
+    });
   }
 
   @override
@@ -223,6 +210,7 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                         label: 'Unidad de Venta *',
                         hint: 'Ej: Unidad, Caja, Paquete, etc.',
                         icon: Icons.shopping_cart,
+                        onChanged: (_) => _updateIdPreview(),
                       ),
                       const SizedBox(height: 20),
                       
