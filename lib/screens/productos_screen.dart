@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/inventario_provider.dart';
 import '../models/producto.dart';
 import 'crear_producto_screen.dart';
@@ -286,58 +287,56 @@ class _ProductosScreenState extends State<ProductosScreen> {
                   bottomRight: Radius.circular(16),
                 ),
               ),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDetailRow('Clase:', producto.clase),
-                  _buildDetailRow('Modelo:', producto.modelo),
-                  _buildDetailRow('Presentación:', producto.presentacion),
-                  _buildDetailRow('Color:', producto.color),
-                  _buildDetailRow('Capacidad:', producto.capacidad),
-                  _buildDetailRow('Unidad de Venta:', producto.unidadVenta),
-                  _buildDetailRow('Ubicación:', '${producto.rack} - ${producto.nivel}'),
-                  
-                  const SizedBox(height: 20),
-                  
-                  // Botones de acción
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => StockManagementScreen(
-                                  producto: producto,
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.edit),
-                          label: const Text('Gestionar Stock'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
-                            foregroundColor: Colors.white,
-                            elevation: 2,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton.icon(
-                        onPressed: () => _confirmarEliminar(context, producto, provider),
-                        icon: const Icon(Icons.delete),
-                        label: const Text('Eliminar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red[600],
-                          foregroundColor: Colors.white,
-                          elevation: 2,
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                        ),
-                      ),
-                    ],
+                  // Información del producto (lado izquierdo)
+                  Expanded(
+                    flex: producto.imagen != null && producto.imagen!.isNotEmpty ? 2 : 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildDetailRow('Clase:', producto.clase),
+                        _buildDetailRow('Modelo:', producto.modelo),
+                        _buildDetailRow('Presentación:', producto.presentacion),
+                        _buildDetailRow('Color:', producto.color),
+                        _buildDetailRow('Capacidad:', producto.capacidad),
+                        _buildDetailRow('Unidad de Venta:', producto.unidadVenta),
+                        _buildDetailRow('Ubicación:', '${producto.rack} - ${producto.nivel}'),
+                        
+                        // Botones de acción (si no hay imagen, se muestran aquí)
+                        if (producto.imagen == null || producto.imagen!.isEmpty) ...[
+                          const SizedBox(height: 20),
+                          _buildActionButtons(context, producto, provider),
+                        ],
+                      ],
+                    ),
                   ),
+                  
+                  // Imagen del producto (lado derecho)
+                  if (producto.imagen != null && producto.imagen!.isNotEmpty) ...[
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Imagen:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildCompactProductImage(producto.imagen!),
+                          const SizedBox(height: 16),
+                          _buildActionButtons(context, producto, provider),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -373,6 +372,120 @@ class _ProductosScreenState extends State<ProductosScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCompactProductImage(String imageUrl) {
+    return Container(
+      constraints: const BoxConstraints(
+        maxHeight: 150,
+        maxWidth: 200,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[300]!),
+        color: Colors.white,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          fit: BoxFit.contain,
+          placeholder: (context, url) => Container(
+            color: Colors.grey[100],
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.blue[600],
+                      strokeWidth: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Cargando...',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Colors.grey[100],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.broken_image_outlined,
+                  size: 24,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Error',
+                  style: TextStyle(
+                    color: Colors.red[600],
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, Producto producto, InventarioProvider provider) {
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StockManagementScreen(
+                    producto: producto,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.edit, size: 16),
+            label: const Text('Gestionar Stock'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue[600],
+              foregroundColor: Colors.white,
+              elevation: 2,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () => _confirmarEliminar(context, producto, provider),
+            icon: const Icon(Icons.delete, size: 16),
+            label: const Text('Eliminar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[600],
+              foregroundColor: Colors.white,
+              elevation: 2,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

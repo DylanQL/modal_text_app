@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/inventario_provider.dart';
 import '../models/producto.dart';
 
@@ -252,7 +253,19 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
                         hint: 'https://ejemplo.com/imagen.jpg',
                         icon: Icons.image,
                         required: false,
+                        onChanged: (value) {
+                          setState(() {
+                            // Trigger rebuild para mostrar preview
+                          });
+                        },
                       ),
+                      
+                      // Preview de imagen
+                      if (_imagenController.text.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        _buildImagePreview(_imagenController.text),
+                      ],
+                      
                       const SizedBox(height: 40),
                       
                       // Botones
@@ -415,5 +428,101 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
         );
       }
     }
+  }
+
+  Widget _buildImagePreview(String imageUrl) {
+    if (imageUrl.isEmpty) return const SizedBox();
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Vista Previa de la Imagen:',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Center(
+          child: Container(
+            constraints: const BoxConstraints(
+              maxHeight: 200,
+              maxWidth: 300,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[300]!),
+              color: Colors.white,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey[100],
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.blue[600],
+                            strokeWidth: 2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Cargando...',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey[100],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.broken_image_outlined,
+                        size: 32,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'URL inválida',
+                        style: TextStyle(
+                          color: Colors.red[600],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Verifica que la URL sea correcta',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 10,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
