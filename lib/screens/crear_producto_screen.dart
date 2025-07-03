@@ -83,9 +83,9 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text('Crear ${widget.tipoProducto == 'ProductoTerminado' ? 'Producto Terminado' : 'Materia Prima'}'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Form(
         key: _formKey,
@@ -96,28 +96,46 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
               Container(
                 width: double.infinity,
                 margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
+                  gradient: LinearGradient(
+                    colors: [Colors.blue[50]!, Colors.blue[100]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.blue[200]!),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'ID Generado (Vista Previa):',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.blue.shade700,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.preview, color: Colors.blue[700], size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ID Generado (Vista Previa):',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.blue[700],
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     Text(
                       _idGeneradoPreview,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.blue.shade800,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Colors.blue[800],
                         fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
                       ),
                     ),
                   ],
@@ -126,136 +144,159 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
 
             // Formulario
             Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildTextField(
-                      controller: _familiaController,
-                      label: 'Familia *',
-                      hint: 'Ej: Electrónicos, Textiles, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _claseController,
-                      label: 'Clase *',
-                      hint: 'Ej: Audio, Video, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _modeloController,
-                      label: 'Modelo *',
-                      hint: 'Ej: MP3, MP4, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _marcaController,
-                      label: 'Marca *',
-                      hint: 'Ej: Apple, Samsung, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _presentacionController,
-                      label: 'Presentación *',
-                      hint: 'Ej: Slim, Compact, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _colorController,
-                      label: 'Color *',
-                      hint: 'Ej: Silver, Black, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _capacidadController,
-                      label: 'Capacidad *',
-                      hint: 'Ej: 16GB, 32GB, etc.',
-                      onChanged: (_) => _updateIdPreview(),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _unidadVentaController,
-                      label: 'Unidad de Venta *',
-                      hint: 'Ej: Unidad, Caja, Paquete, etc.',
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _rackController,
-                            label: 'Rack *',
-                            hint: 'Ej: A1, B2, etc.',
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _nivelController,
-                            label: 'Nivel *',
-                            hint: 'Ej: 1, 2, 3, etc.',
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    _buildTextField(
-                      controller: _imagenController,
-                      label: 'URL de Imagen (Opcional)',
-                      hint: 'https://ejemplo.com/imagen.jpg',
-                      required: false,
-                    ),
-                    const SizedBox(height: 32),
-                    
-                    // Botones
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _isCreating ? null : () => Navigator.pop(context),
-                            child: const Text('Cancelar'),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _isCreating ? null : _crearProducto,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
+              child: Container(
+                color: Colors.white,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildTextField(
+                        controller: _familiaController,
+                        label: 'Familia *',
+                        hint: 'Ej: Electrónicos, Textiles, etc.',
+                        icon: Icons.category,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _claseController,
+                        label: 'Clase *',
+                        hint: 'Ej: Audio, Video, etc.',
+                        icon: Icons.class_,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _modeloController,
+                        label: 'Modelo *',
+                        hint: 'Ej: MP3, MP4, etc.',
+                        icon: Icons.device_hub,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _marcaController,
+                        label: 'Marca *',
+                        hint: 'Ej: Apple, Samsung, etc.',
+                        icon: Icons.branding_watermark,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _presentacionController,
+                        label: 'Presentación *',
+                        hint: 'Ej: Slim, Compact, etc.',
+                        icon: Icons.style,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _colorController,
+                        label: 'Color *',
+                        hint: 'Ej: Silver, Black, etc.',
+                        icon: Icons.color_lens,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _capacidadController,
+                        label: 'Capacidad *',
+                        hint: 'Ej: 16GB, 32GB, etc.',
+                        icon: Icons.storage,
+                        onChanged: (_) => _updateIdPreview(),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _unidadVentaController,
+                        label: 'Unidad de Venta *',
+                        hint: 'Ej: Unidad, Caja, Paquete, etc.',
+                        icon: Icons.shopping_cart,
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _rackController,
+                              label: 'Rack *',
+                              hint: 'Ej: A1, B2, etc.',
+                              icon: Icons.shelves,
                             ),
-                            child: _isCreating
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text('Crear Producto'),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _nivelController,
+                              label: 'Nivel *',
+                              hint: 'Ej: 1, 2, 3, etc.',
+                              icon: Icons.layers,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      _buildTextField(
+                        controller: _imagenController,
+                        label: 'URL de Imagen (Opcional)',
+                        hint: 'https://ejemplo.com/imagen.jpg',
+                        icon: Icons.image,
+                        required: false,
+                      ),
+                      const SizedBox(height: 40),
+                      
+                      // Botones
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _isCreating ? null : () => Navigator.pop(context),
+                              icon: const Icon(Icons.cancel),
+                              label: const Text('Cancelar'),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                side: BorderSide(color: Colors.grey[400]!),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _isCreating ? null : _crearProducto,
+                              icon: _isCreating
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    )
+                                  : const Icon(Icons.add),
+                              label: Text(_isCreating ? 'Creando...' : 'Crear Producto'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[600],
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                elevation: 2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -269,35 +310,56 @@ class _CrearProductoScreenState extends State<CrearProductoScreen> {
     required TextEditingController controller,
     required String label,
     required String hint,
+    IconData? icon,
     bool required = true,
     Function(String)? onChanged,
   }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.blue),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      validator: required
-          ? (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Este campo es obligatorio';
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          prefixIcon: icon != null ? Icon(icon, color: Colors.blue[600]) : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey[200]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        ),
+        validator: required
+            ? (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Este campo es obligatorio';
+                }
+                return null;
               }
-              return null;
-            }
-          : null,
-      onChanged: onChanged,
+            : null,
+        onChanged: onChanged,
+      ),
     );
   }
 

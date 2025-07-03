@@ -32,9 +32,9 @@ class _ProductosScreenState extends State<ProductosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(widget.titulo),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -66,7 +66,8 @@ class _ProductosScreenState extends State<ProductosScreen> {
           return Column(
             children: [
               // Barra de búsqueda
-              Padding(
+              Container(
+                color: Colors.white,
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
                   controller: _searchController,
@@ -85,8 +86,11 @@ class _ProductosScreenState extends State<ProductosScreen> {
                           )
                         : null,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -101,42 +105,69 @@ class _ProductosScreenState extends State<ProductosScreen> {
                 child: provider.isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : productosFiltrados.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.inventory_2_outlined,
-                                  size: 64,
-                                  color: Colors.grey[400],
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _searchQuery.isEmpty
-                                      ? 'No hay productos registrados'
-                                      : 'No se encontraron productos',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                if (_searchQuery.isEmpty) ...[
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Presiona el botón + para agregar el primer producto',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.grey[500],
+                        ? Container(
+                            color: Colors.grey[50],
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    margin: const EdgeInsets.all(32),
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                          Icons.inventory_2_outlined,
+                                          size: 64,
+                                          color: Colors.grey[400],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          _searchQuery.isEmpty
+                                              ? 'No hay productos registrados'
+                                              : 'No se encontraron productos',
+                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            color: Colors.grey[600],
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        if (_searchQuery.isEmpty) ...[
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Presiona el botón + para agregar el primer producto',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: Colors.grey[500],
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                   ),
                                 ],
-                              ],
+                              ),
                             ),
                           )
                         : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.all(16),
                             itemCount: productosFiltrados.length,
                             itemBuilder: (context, index) {
                               final producto = productosFiltrados[index];
-                              return _buildProductoCard(context, producto, provider);
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _buildProductoCard(context, producto, provider),
+                              );
                             },
                           ),
               ),
@@ -165,119 +196,153 @@ class _ProductosScreenState extends State<ProductosScreen> {
             }
           }
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blue[600],
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
 
   Widget _buildProductoCard(BuildContext context, Producto producto, InventarioProvider provider) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ExpansionTile(
-        title: Text(
-          producto.idGenerado,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          expansionTileTheme: const ExpansionTileThemeData(
+            backgroundColor: Colors.transparent,
+            collapsedBackgroundColor: Colors.transparent,
           ),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ExpansionTile(
+          title: Text(
+            producto.idGenerado,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text('${producto.familia} - ${producto.marca}'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: producto.stockActual > 0 ? Colors.green : Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'Stock: ${producto.stockActual}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.blue[200]!),
+                    ),
+                    child: Text(
+                      'Código: ${producto.codigoNumerico}',
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
           children: [
-            Text('${producto.familia} - ${producto.marca}'),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: producto.stockActual > 0 ? Colors.green : Colors.red,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Stock: ${producto.stockActual}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
                 ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade100,
-                    borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDetailRow('Clase:', producto.clase),
+                  _buildDetailRow('Modelo:', producto.modelo),
+                  _buildDetailRow('Presentación:', producto.presentacion),
+                  _buildDetailRow('Color:', producto.color),
+                  _buildDetailRow('Capacidad:', producto.capacidad),
+                  _buildDetailRow('Unidad de Venta:', producto.unidadVenta),
+                  _buildDetailRow('Ubicación:', '${producto.rack} - ${producto.nivel}'),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Botones de acción
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => StockManagementScreen(
+                                  producto: producto,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.edit),
+                          label: const Text('Gestionar Stock'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[600],
+                            foregroundColor: Colors.white,
+                            elevation: 2,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton.icon(
+                        onPressed: () => _confirmarEliminar(context, producto, provider),
+                        icon: const Icon(Icons.delete),
+                        label: const Text('Eliminar'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red[600],
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    'Código: ${producto.codigoNumerico}',
-                    style: TextStyle(
-                      color: Colors.blue.shade700,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailRow('Clase:', producto.clase),
-                _buildDetailRow('Modelo:', producto.modelo),
-                _buildDetailRow('Presentación:', producto.presentacion),
-                _buildDetailRow('Color:', producto.color),
-                _buildDetailRow('Capacidad:', producto.capacidad),
-                _buildDetailRow('Unidad de Venta:', producto.unidadVenta),
-                _buildDetailRow('Ubicación:', '${producto.rack} - ${producto.nivel}'),
-                
-                const SizedBox(height: 16),
-                
-                // Botones de acción
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StockManagementScreen(
-                                producto: producto,
-                              ),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.edit),
-                        label: const Text('Gestionar Stock'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: () => _confirmarEliminar(context, producto, provider),
-                      icon: const Icon(Icons.delete),
-                      label: const Text('Eliminar'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
