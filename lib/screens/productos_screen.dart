@@ -5,6 +5,7 @@ import '../providers/inventario_provider.dart';
 import '../models/producto.dart';
 import 'crear_producto_screen.dart';
 import 'stock_management_screen.dart';
+import '../widgets/barcode_scanner_widget.dart';
 
 class ProductosScreen extends StatefulWidget {
   final String tipoProducto;
@@ -23,6 +24,7 @@ class ProductosScreen extends StatefulWidget {
 class _ProductosScreenState extends State<ProductosScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  bool _isSpeedDialOpen = false;
 
   @override
   void dispose() {
@@ -30,10 +32,102 @@ class _ProductosScreenState extends State<ProductosScreen> {
     super.dispose();
   }
 
+  Future<void> _scanBarcode() async {
+    setState(() {
+      _isSpeedDialOpen = false;
+    });
+    
+    try {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BarcodeScannerWidget(),
+        ),
+      );
+      
+      if (result != null && result is String && result.isNotEmpty) {
+        // Buscar el producto por código numérico
+        final provider = Provider.of<InventarioProvider>(context, listen: false);
+        final producto = await provider.buscarProductoPorCodigo(result);
+        
+        if (producto != null && mounted) {
+          // Navegar a la gestión de stock con el producto encontrado
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StockManagementScreen(producto: producto),
+            ),
+          );
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Producto no encontrado con código: $result'),
+              backgroundColor: Colors.orange,
+              action: SnackBarAction(
+                label: 'Ver Stock',
+                textColor: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StockManagementScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al escanear: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _createProduct() async {
+    setState(() {
+      _isSpeedDialOpen = false;
+    });
+    
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CrearProductoScreen(
+          tipoProducto: widget.tipoProducto,
+        ),
+      ),
+    );
+    
+    if (result == true) {
+      // Recargar productos si se creó uno nuevo
+      final provider = Provider.of<InventarioProvider>(context, listen: false);
+      if (widget.tipoProducto == 'ProductoTerminado') {
+        provider.cargarProductosTerminados();
+      } else {
+        provider.cargarMateriasPrimas();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return GestureDetector(
+      onTap: () {
+        if (_isSpeedDialOpen) {
+          setState(() {
+            _isSpeedDialOpen = false;
+          });
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(widget.titulo),
         actions: [
@@ -176,29 +270,101 @@ class _ProductosScreenState extends State<ProductosScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CrearProductoScreen(
-                tipoProducto: widget.tipoProducto,
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Botón de escanear código de barras
+          AnimatedScale(
+            scale: _isSpeedDialOpen ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 200),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'Escanear Código',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  FloatingActionButton(
+                    heroTag: "scan",
+                    onPressed: _isSpeedDialOpen ? _scanBarcode : null,
+                    backgroundColor: Colors.orange[600],
+                    child: const Icon(Icons.qr_code_scanner, color: Colors.white),
+                  ),
+                ],
               ),
             ),
-          );
+          ),
           
-          if (result == true) {
-            // Recargar productos si se creó uno nuevo
-            final provider = Provider.of<InventarioProvider>(context, listen: false);
-            if (widget.tipoProducto == 'ProductoTerminado') {
-              provider.cargarProductosTerminados();
-            } else {
-              provider.cargarMateriasPrimas();
-            }
-          }
-        },
-        backgroundColor: Colors.blue[600],
-        child: const Icon(Icons.add, color: Colors.white),
+          // Botón de crear producto
+          AnimatedScale(
+            scale: _isSpeedDialOpen ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 150),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      'Crear Producto',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  FloatingActionButton(
+                    heroTag: "create",
+                    onPressed: _isSpeedDialOpen ? _createProduct : null,
+                    backgroundColor: Colors.green[600],
+                    child: const Icon(Icons.add, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Botón principal
+          FloatingActionButton(
+            heroTag: "main",
+            onPressed: () {
+              setState(() {
+                _isSpeedDialOpen = !_isSpeedDialOpen;
+              });
+            },
+            backgroundColor: Colors.blue[600],
+            child: AnimatedRotation(
+              turns: _isSpeedDialOpen ? 0.125 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                _isSpeedDialOpen ? Icons.close : Icons.menu,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
       ),
     );
   }
